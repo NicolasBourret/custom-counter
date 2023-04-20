@@ -1,4 +1,5 @@
 import { PubSub } from "../lib/pubsub.js";
+import { createProxy } from "./proxy.js";
 
 export class Store {
   constructor(params) {
@@ -18,23 +19,7 @@ export class Store {
       self.mutations = params.mutations;
     }
 
-    self.state = new Proxy(params.state || {}, {
-      set: (state, key, value) => {
-        state[key] = value;
-
-        console.log("state change", key, value);
-
-        self.events.publish("stateChange", self.state);
-
-        if (self.status !== "mutation") {
-          console.warn(`You should use a mutation to ${key}`);
-        }
-
-        self.status = "resting";
-
-        return true;
-      },
-    });
+    self.state = createProxy(params, self);
   }
 
   dispatch = (actionKey, payload) => {
