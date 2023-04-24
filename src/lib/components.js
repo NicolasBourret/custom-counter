@@ -1,17 +1,15 @@
-import { Store } from "../store/store.js";
+import { Store } from '../store/store.js';
 
 export class Component {
-  constructor(props = {}) {
-    let self = this;
+   constructor(props = {}) {
+      this.render = this.render || function () {};
 
-    this.render = this.render || function () {};
+      if (props.store instanceof Store) {
+         props.store.events.subscribe('stateChange', () => this.render());
+      }
 
-    if (props.store instanceof Store) {
-      props.store.events.subscribe("stateChange", () => self.render());
-    }
-
-    if (props.hasOwnProperty("element")) {
-      this.element = props.element;
-    }
-  }
+      if (props.hasOwnProperty('element')) {
+         this.element = props.element;
+      }
+   }
 }
